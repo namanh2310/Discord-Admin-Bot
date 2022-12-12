@@ -3,9 +3,9 @@ const {
   ActivityType,
   GatewayIntentBits,
   EmbedBuilder,
+  Collection,
 } = require("discord.js");
 
-const exampleEmbed = new EmbedBuilder();
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -14,7 +14,10 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
   ],
 });
+client.commands = new Collection();
+client.aliases = new Collection();
 
+const axios = require("axios");
 const { token } = require("./config.json");
 
 const messageData = [
@@ -47,9 +50,35 @@ const interact = {
       message.reply(`${Math.round(client.ws.ping)}ms`);
     }
   },
-  // getAvt: function (message) {
-  //   const args = message.content.split(" ");
-  // },
+  getAvt: function (message, member) {
+    if (message.content.toLowerCase() == "avatar") {
+      const avatarEmbeded = new EmbedBuilder().setImage(member.avatarURL());
+      message.reply({ embeds: [avatarEmbeded] });
+    }
+  },
+  getAIBot: async function (message) {
+    if (message.author.bot) return;
+    if (message.channel.id === "1051776316921352192") {
+      try {
+        const res = await axios.get(`
+      http://api.brainshop.ai/get?bid=171113&key=nKUirLX72OrdEcbl&uid=1&msg=${encodeURIComponent(
+        message.content
+      )}`);
+        message.content == "delete"
+          ? message.channel.send("deleting...")
+          : message.channel.send(res.data.cnt);
+      } catch {
+        message.channel.send("Error");
+      }
+    } else return;
+  },
+  getDelete: function (message, Messages) {
+    if (message.content.toLowerCase() == "delete") {
+      Messages.forEach((msg) => {
+        if (msg) msg.delete();
+      });
+    }
+  },
 };
 
 client.on("ready", () => {
@@ -61,17 +90,18 @@ client.on("ready", () => {
   });
 });
 
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
+  //constant
+  const member = message.mentions.users.first() || message.author;
+  const Channel = message.channel;
+  const Messages = await Channel.messages.fetch({ limit: 100 });
+
+  //interaction
   interact.getMessage(message);
   interact.getPing(message);
-  // interact.getAvt(message);
-  if (message.content.toLowerCase() == "avatar") {
-    // const args = message.content.split(" ");
-    const member = message.mentions.users.first() || message.author;
-    // const URL = member.user.avatarURL({ size: 1024 });
-    const avatarEmbeded = new EmbedBuilder().setImage(member.avatarURL());
-    message.reply({ embeds: [avatarEmbeded] });
-  }
+  interact.getAvt(message, member);
+  interact.getAIBot(message);
+  interact.getDelete(message, Messages);
 });
 
 client.login(token);

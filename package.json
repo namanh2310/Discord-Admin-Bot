@@ -3,7 +3,9 @@
     "start": "nodemon index.js"
   },
   "dependencies": {
-    "discord.js": "^14.7.1"
+    "axios": "^1.2.1",
+    "discord.js": "^14.7.1",
+    "distube": "^4.0.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
