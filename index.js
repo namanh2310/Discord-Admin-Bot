@@ -23,17 +23,17 @@ const { token } = require("./config.json");
 const messageData = [
   {
     content: "chào",
-    response: "chào cái lồn",
+    response: "chào bạn nha",
   },
 
   {
     content: "nam anh",
-    response: "là người đẹp nhất room này",
+    response: "là người đẹp trai nhất room này",
   },
 
   {
     content: "bê đê",
-    response: "là loài động vật hạ đẳng",
+    response: "là Duy",
   },
 ];
 
@@ -82,7 +82,7 @@ const interact = {
 };
 
 client.on("ready", () => {
-  console.log(`${client.user.username} đã sẵn sàng thị tẩm! `);
+  console.log(`${client.user.username} is on the mic! `);
 
   client.user.setPresence({
     activities: [{ name: "nước mắt...", type: ActivityType.Listening }],
